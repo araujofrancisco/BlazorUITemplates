@@ -1,0 +1,31 @@
+﻿@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @if (!string.IsNullOrEmpty(Icon))
+            {
+                <MudIcon Icon=@Icon Class="mr-3 mb-n1" Style="vertical-align: baseline;"/>
+            }
+            @MudDialog.Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @Content
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string Icon { get; set; } = null;
+    [Parameter] public string Content { get; set; } = null;
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}

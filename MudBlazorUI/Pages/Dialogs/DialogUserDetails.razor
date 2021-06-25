@@ -1,0 +1,133 @@
+﻿@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+@inject UserService UserService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3 mb-n1" Style="vertical-align: baseline;" />
+            User Details
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudTextField T="string" Value="@User.UserName" Label="UserName" ReadOnly="@(Action == UserAction.Edit)" Required="true" RequiredError="User name is required!" />
+                    <MudTextField T="string" Value="@User.Email" Label="Email" ReadOnly="@(Action == UserAction.Edit)" Required="true" RequiredError="Email is required!"
+                                  Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })" />
+                    <MudTextField T="string" Value="@User.FirstName" Label="First name" ReadOnly="false" />
+                    <MudTextField T="string" Value="@User.LastName" Label="Last name" ReadOnly="false" />
+                    <MudTextField T="string" Value="@User.MobileNbr" Label="Mobile" ReadOnly="false" />
+                </MudCardContent>
+                <MudCardContent>
+                    <MudSwitch @bind-Checked="@PasswordLocked" Label="@(_PasswordLocked ? "ReadOnly" : "Edit")" Color="Color.Secondary" />
+
+                    <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @ref="pwField1"
+                                  InputType="InputType.Password"
+                                  Validation="@(_PasswordLocked ? null : new Func<string, IEnumerable<string>>(PasswordStrength))" Required="@(!_PasswordLocked)"
+                                  RequiredError="Password is required!" 
+                                  Disabled="@_PasswordLocked" />
+                    <MudTextField T="string" @ref="pwField2"
+                                  Label="Password" HelperText="Repeat the password" InputType="InputType.Password"
+                                  Validation="@(new Func<string, string>(PasswordMatch))"
+                                  Disabled="@_PasswordLocked" />
+                </MudCardContent>
+            </MudCard>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="saveChanges">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public User User { get; set; } = null;
+    [Parameter] public UserAction Action { get; set; } = UserAction.List;
+
+    private bool _PasswordLocked { get; set; } = true;
+
+    private bool success;
+    private string[] errors = { };
+
+    private MudTextField<string> pwField1;
+    private MudTextField<string> pwField2;
+    private MudForm form;
+
+    private bool PasswordLocked
+    {
+        get { return _PasswordLocked; }
+        set
+        {
+            if (value)
+            {
+                pwField1.Reset();
+                pwField2.Reset();
+            }
+            _PasswordLocked = value;
+        }
+    }
+    private IEnumerable<string> PasswordStrength(string pw)
+    {
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Password is required!";
+            yield break;
+        }
+        if (pw.Length < 8)
+            yield return "Password must be at least of length 8";
+        if (!Regex.IsMatch(pw, @"[A-Z]"))
+            yield return "Password must contain at least one capital letter";
+        if (!Regex.IsMatch(pw, @"[a-z]"))
+            yield return "Password must contain at least one lowercase letter";
+        if (!Regex.IsMatch(pw, @"[0-9]"))
+            yield return "Password must contain at least one digit";
+    }
+
+    private string PasswordMatch(string arg)
+    {
+        if (pwField1.Value != arg)
+            return "Passwords don't match";
+        return null;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task saveChanges()
+    {
+        form.Validate();
+
+        if (form.IsValid)
+            try
+            {
+                // save changes
+                //Snackbar.Add("Changes saved", Severity.Success);
+                Console.WriteLine("Changes saved");
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("An error ocurred during saving...", Severity.Error);
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                MudDialog.Close(DialogResult.Ok(User));
+            }
+        else
+            Console.WriteLine("Form validation failed");
+    }
+}

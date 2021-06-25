@@ -1,0 +1,115 @@
+﻿<MudThemeProvider Theme="currentTheme" />
+
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+            <MudIconButton OnClick=@((e) => DarkMode()) Icon=@(currentTheme == defaultTheme ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.NightlightRound) 
+                           Title="Toggle Dark/Light Mode"></MudIconButton> 
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code{
+
+    protected override void OnInitialized()
+    {
+        currentTheme = defaultTheme;
+    }
+
+    void DarkMode()
+    {
+        if (currentTheme == defaultTheme)
+        {
+            currentTheme = darkTheme;
+        }
+        else
+        {
+            currentTheme = defaultTheme;
+        }
+    }
+
+    MudTheme currentTheme = new MudTheme();
+    MudTheme defaultTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Black = "#272c34",
+            ActionDefault = "#adadb1" ,
+            Primary = "#182062" //,
+            //TableHover = "#F44336",
+            //TableStriped = "#BDBDBD"
+        }
+    };
+
+    MudTheme darkTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Black = "#27272f",
+            Background = "#32333d",
+            BackgroundGrey = "#27272f",
+            Surface = "#373740",
+            DrawerBackground = "#27272f",
+            DrawerText = "rgba(255,255,255, 0.50)",
+            DrawerIcon = "rgba(255,255,255, 0.50)",
+            AppbarBackground = "#27272f",
+            AppbarText = "rgba(255,255,255, 0.70)",
+            TextPrimary = "rgba(255,255,255, 0.70)",
+            TextSecondary = "rgba(255,255,255, 0.50)",
+            ActionDefault = "#adadb1",
+            ActionDisabled = "rgba(255,255,255, 0.26)",
+            ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+            Divider = "rgba(255,255,255, 0.12)",
+            DividerLight = "rgba(255,255,255, 0.06)",
+            TableLines = "rgba(255,255,255, 0.12)",
+            LinesDefault = "rgba(255,255,255, 0.12)",
+            LinesInputs = "rgba(255,255,255, 0.3)",
+            TextDisabled = "rgba(255,255,255, 0.2)"
+
+            //Black = "#000000",
+            //White = "#FFFFFF",
+            //Primary = "#594AE2",
+            //Tertiary = "#1EC8A5",
+            //Info = "#2196F3",
+            //Success = "#00C853",
+            //Warning = "#FF9800",
+            //Error = "#F44336",
+            //Dark = "#424242",
+            //TextPrimary = "#424242",
+            //TextSecondary = "rgba(0,0,0, 0.54)",
+            //TextDisabled = "rgba(0,0,0, 0.38)",
+            //ActionDefault = "rgba(0,0,0, 0.54)",
+            //ActionDisabled = "rgba(0,0,0, 0.26)",
+            //ActionDisabledBackground = "rgba(0,0,0, 0.12)",
+            //Background = "#FFFFFF",
+            //BackgroundGrey = "#F5F5F5",
+            //Surface = "#FFFFFF",
+            //DrawerBackground = "#FFFFFF",
+            //DrawerText = "#424242",
+            //DrawerIcon = "#616161",
+            //AppbarBackground = "#594AE2",
+            //AppbarText = "#FFFFFF",
+            //LinesDefault = "rgba(0,0,0, 0.12)",
+            //LinesInputs = "#BDBDBD",
+            //Divider = "#E0E0E0",
+            //DividerLight = "rgba(0,0,0, 0.8)",
+            //HoverOpacity = "0.06",
+            //GrayDefault = "#9E9E9E",
+            //GrayLight = "#BDBDBD",
+            //GrayLighter = "#E0E0E0",
+            //GrayDark = "#757575",
+            //GrayDarker = "#616161"
+        }
+    };
+}

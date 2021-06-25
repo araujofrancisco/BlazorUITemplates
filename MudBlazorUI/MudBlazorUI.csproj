@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+    <UserSecretsId>e49227d2-e970-497c-80eb-2b6cf904d5bf</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FreelanceDevelopers.Blazor.Core" Version="1.0.7" />
+    <PackageReference Include="FreelanceDevelopers.Blazor.DataTable" Version="1.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="5.0.14" />
+  </ItemGroup>
+
+</Project>
