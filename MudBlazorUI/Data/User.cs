@@ -14,7 +14,7 @@ namespace MudBlazorUI.Data
     public class User
     {
         [Key]
-        public string UserName => $"{FirstName}{LastName}".ToLower();
+        public string UserName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MobileNbr { get; set; }

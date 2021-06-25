@@ -28,17 +28,21 @@ namespace MudBlazorUI.Data
         public Task<List<User>> GetUserAsync()
         {
             var rng = new Random();
-            return Task.FromResult(Enumerable.Range(1, 500).Select(index => new User
+            List<User> users = Enumerable.Range(1, 500).Select(index => new User
             {
-                FirstName = FirstNames[rng.Next(FirstNames.Length)],
-                LastName = LastNames[rng.Next(LastNames.Length)],
-                Email = $"user{rng.Next(10000,99999)}@gmail.com",
-                MobileNbr = $"+{rng.Next(1,9)}{rng.Next(100,999)}{rng.Next(100,999)}{rng.Next(1000,9999)}",
+                UserName = $"{LastNames[rng.Next(LastNames.Length)]}.{FirstNames[rng.Next(FirstNames.Length)]}",
+                Email = $"user{rng.Next(10000, 99999)}@gmail.com",
+                MobileNbr = $"+{rng.Next(1, 9)}{rng.Next(100, 999)}{rng.Next(100, 999)}{rng.Next(1000, 9999)}",
                 IsEnabled = (rng.Next(100) % 2) != 0,
                 UserRoles = new List<Roles>() { (Roles)rng.Next(0, 3) }
             })
                 .DistinctBy(u => u.UserName)
-                .ToList()); 
+                .ToList();
+
+            // updates first and last names
+            users.ForEach(u => { string[] names = u.UserName.Split("."); u.LastName = names[0]; u.FirstName = names[1]; });
+
+            return Task.FromResult(users);
         }
 
         public async Task ToggleSignIn(User user)
