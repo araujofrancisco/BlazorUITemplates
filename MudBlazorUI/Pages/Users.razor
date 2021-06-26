@@ -32,11 +32,11 @@
 }
 else
 {
-    <style>
+    @*<style>
         .table table-stripped {
             color: darkred !important;
         }
-    </style>
+    </style>*@
 
     <EditForm EditContext="editContext">
         <MudPaper Height="100vh" Style="overflow:hidden; position:relative;">
@@ -46,16 +46,24 @@ else
                     @if (curUser != null)
                     {
                         <div style="display: flex;justify-content: left; justify-items: left;">
-                            <MudIconButton Icon="@Icons.Material.Filled.East" OnClick="@CloseAndClear" />
-                            <MudDrawerHeader Style="display: grid;justify-content: center; justify-items: center;">
+                            <div class="icon-east zoom-in-hover">
+                                <MudIconButton Icon="@Icons.Material.Filled.East" OnClick="@CloseAndClear" Color="Color.Inherit"/>
+                            </div>
+                            <MudDrawerHeader Style="display: grid;justify-content: center; justify-items: center;padding-left: 6px;padding-right: 6px;">
                                 <MudText Typo="Typo.h6">@curUser.FirstName @curUser.LastName</MudText>
-                                <MudContainer Style="display: flex;">
-                                    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.VpnKey" OnClick="resetPassword" Color="Color.Inherit"
-                                               Style="text-transform: none; font-size: x-small;" Size="Size.Small">Reset password</MudButton>
-                                    <MudButton Variant="Variant.Text" StartIcon=@(curUser.IsEnabled ? Icons.Material.Outlined.Block : Icons.Material.Outlined.Check) OnClick="blockSignIn" Color="Color.Inherit"
-                                               Style="text-transform: none; font-size: x-small;" Size="Size.Small">@(curUser.IsEnabled ? "Block sign-in" : "Allow sign-in")</MudButton>
-                                    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" OnClick="deleteUser" Color="Color.Inherit"
-                                               Style="text-transform: none; font-size: x-small;" Size="Size.Small">Delete user</MudButton>
+                                <MudContainer Style="display: flex;column-gap: 12px;">
+                                    <div class="zoom-in-hover">
+                                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.VpnKey" OnClick="resetPassword" Color="Color.Inherit"
+                                                   Style="text-transform: none; font-size: x-small;" Size="Size.Small">Reset password</MudButton>
+                                    </div>
+                                    <div class="zoom-in-hover">
+                                        <MudButton Variant="Variant.Text" StartIcon=@(curUser.IsEnabled ? Icons.Material.Outlined.Block : Icons.Material.Outlined.Check) OnClick="blockSignIn" Color="Color.Inherit"
+                                                   Style="text-transform: none; font-size: x-small;" Size="Size.Small">@(curUser.IsEnabled ? "Block sign-in" : "Allow sign-in")</MudButton>
+                                    </div>
+                                    <div class="zoom-in-hover">
+                                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" OnClick="deleteUser" Color="Color.Inherit"
+                                                   Style="text-transform: none; font-size: x-small;" Size="Size.Small">Delete user</MudButton>
+                                    </div>
                                 </MudContainer>
                             </MudDrawerHeader>
                         </div>
@@ -173,6 +181,9 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
+            //TODO: call user service to save password
+            curUser = (User)result.Data;
+
             Snackbar.Add($"Password resetted", Severity.Success);
         }
     }
@@ -203,17 +214,12 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
+            //TODO: call user service to remove user
             users.Remove(curUser);
+
             await CloseAndClear();
             Snackbar.Add($"User {curUser?.UserName} deleted", Severity.Success);
         }
-
-        //if (result != null)
-        //{
-        //    users.Remove(curUser);
-        //    open = false;
-        //    Snackbar.Add($"User {curUser?.UserName} deleted", Severity.Success);
-        //}
     }
 
     private async Task addUser()
@@ -227,8 +233,10 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
+            //TODO: call user service to add new user
             curUser = (User) result.Data;
             users.Add(curUser);
+
             Snackbar.Add($"User {curUser.UserName} created", Severity.Success);
             await InvokeAsync(StateHasChanged);
         }
@@ -245,6 +253,9 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
+            //TODO: call user service to save changes
+            //curUser = (User) result.Data;
+
             await CloseAndClear();
             Snackbar.Add($"Changes saved", Severity.Success);
         }

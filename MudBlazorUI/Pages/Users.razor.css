@@ -1,0 +1,8 @@
+﻿.icon-east {
+    display: flex;
+}
+
+.zoom-in-hover:hover {
+    transform: scale(1.25);
+    transition: transform .2s;
+}
