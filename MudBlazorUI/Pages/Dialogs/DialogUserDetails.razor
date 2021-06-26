@@ -15,25 +15,27 @@
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
             <MudCard Elevation="0">
                 <MudCardContent>
-                    <MudTextField T="string" Value="@User.UserName" Label="UserName" ReadOnly="@(Action == UserAction.Edit)" Required="true" RequiredError="User name is required!" />
-                    <MudTextField T="string" Value="@User.Email" Label="Email" ReadOnly="@(Action == UserAction.Edit)" Required="true" RequiredError="Email is required!"
+                    <MudTextField T="string" @bind-Value="@User.UserName" Label="UserName" ReadOnly="@(Action == UserAction.Edit)" 
+                                  Required="true" RequiredError="User name is required!" />
+                    <MudTextField T="string" @bind-Value="@User.Email" Label="Email" ReadOnly="@(Action == UserAction.Edit)" 
+                                  Required="true" RequiredError="Email is required!"
                                   Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })" />
-                    <MudTextField T="string" Value="@User.FirstName" Label="First name" ReadOnly="false" />
-                    <MudTextField T="string" Value="@User.LastName" Label="Last name" ReadOnly="false" />
-                    <MudTextField T="string" Value="@User.MobileNbr" Label="Mobile" ReadOnly="false" />
+                    <MudTextField T="string" @bind-Value="@User.FirstName" Label="First name" ReadOnly="false" />
+                    <MudTextField T="string" @bind-Value="@User.LastName" Label="Last name" ReadOnly="false" />
+                    <MudTextField T="string" @bind-Value="@User.MobileNbr" Label="Mobile" ReadOnly="false" />
                 </MudCardContent>
                 <MudCardContent>
-                    <MudSwitch @bind-Checked="@PasswordLocked" Label="@(_PasswordLocked ? "ReadOnly" : "Edit")" Color="Color.Secondary" />
+                    <MudSwitch @bind-Checked="@PasswordLocked" Label="@(PasswordLocked ? "ReadOnly" : "Edit")" Color="Color.Secondary" Disabled="@(Action == UserAction.Add)"/>
 
                     <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @ref="pwField1"
                                   InputType="InputType.Password"
-                                  Validation="@(_PasswordLocked ? null : new Func<string, IEnumerable<string>>(PasswordStrength))" Required="@(!_PasswordLocked)"
-                                  RequiredError="Password is required!" 
-                                  Disabled="@_PasswordLocked" />
+                                  Validation="@(PasswordLocked ? null : new Func<string, IEnumerable<string>>(PasswordStrength))" Required="@(!PasswordLocked)"
+                                  RequiredError="Password is required!"
+                                  Disabled="@PasswordLocked" />
                     <MudTextField T="string" @ref="pwField2"
                                   Label="Password" HelperText="Repeat the password" InputType="InputType.Password"
                                   Validation="@(new Func<string, string>(PasswordMatch))"
-                                  Disabled="@_PasswordLocked" />
+                                  Disabled="@PasswordLocked" />
                 </MudCardContent>
             </MudCard>
         </MudForm>
@@ -62,7 +64,7 @@
 
     private bool PasswordLocked
     {
-        get { return _PasswordLocked; }
+        get { return _PasswordLocked || Action != UserAction.Add; }
         set
         {
             if (value)
@@ -73,6 +75,7 @@
             _PasswordLocked = value;
         }
     }
+
     private IEnumerable<string> PasswordStrength(string pw)
     {
         if (string.IsNullOrWhiteSpace(pw))
@@ -95,11 +98,6 @@
         if (pwField1.Value != arg)
             return "Passwords don't match";
         return null;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        
     }
 
     private void Cancel()
