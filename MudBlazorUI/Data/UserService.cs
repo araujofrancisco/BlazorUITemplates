@@ -49,5 +49,25 @@ namespace MudBlazorUI.Data
         {
             await Task.Run(() => user.IsEnabled = !user.IsEnabled);
         }
+
+        public async Task AddUser(User user)
+        {
+
+        }
+
+        public async Task EditUser(User user)
+        {
+
+        }
+
+        public async Task DeleteUser(User user)
+        {
+
+        }
+
+        public async Task SetNewPassword()
+        {
+
+        }
     }
 }
