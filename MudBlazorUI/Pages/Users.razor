@@ -11,8 +11,10 @@
 
 <MudToolBar Style="padding-left: 0;">
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonAddAlt1" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="addUser">Add a user</MudButton>
-    @*<MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.Refresh" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="refresh">Refresh</MudButton>*@
-    @*<MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="deleteUser">Delete user</MudButton>
+
+    @* These buttons would make sense if we activate multiuser selection to apply actions on users *@
+    @*<MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.Refresh" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="refresh">Refresh</MudButton>
+    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="deleteUser">Delete user</MudButton>
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.VpnKey" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="resetPassword">Reset password</MudButton>
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="manageRoles">Manage roles</MudButton>
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.Download" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="exportUser">Export user</MudButton>
@@ -63,21 +65,21 @@ else
                                 <MudText>Username and email</MudText>
                                 <p class="pt-1">
                                     <MudText>@curUser.Email</MudText>
-                                    @*<MudLink Href="/" Target="_self" Color="Color.Warning" Style="cursor: pointer;">Manage username and email</MudLink>*@
                                     <div style="margin-top: 5px;">
                                         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="editUser">Manage username and email</MudButton>
                                     </div>
                                 </p>
                             </MudTabPanel>
+                            @* TabPanel could include more options/information *@
                             @*<MudTabPanel Text="Devices">
-                    <MudText>Content Two</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Licenses and apps">
-                    <MudText>Content Three</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Mail" Disabled="true">
-                    <MudText>Content Disabled</MudText>
-                </MudTabPanel>*@
+                                <MudText>Content Two</MudText>
+                            </MudTabPanel>
+                            <MudTabPanel Text="Licenses and apps">
+                                <MudText>Content Three</MudText>
+                            </MudTabPanel>
+                            <MudTabPanel Text="Mail" Disabled="true">
+                                <MudText>Content Disabled</MudText>
+                            </MudTabPanel>*@
                         </MudTabs>
                     }
                 </MudDrawer>
@@ -113,18 +115,6 @@ else
         </MudPaper>
     </EditForm>
 }
-@*<CustomDialog TModel="User" ShowModal=@showModal OnChange="DialogChange" ShowCancelButton="true">
-    <HeaderContent>
-        @DialogTitle
-    </HeaderContent>
-
-    <BodyContent>
-        @DialogMessage
-    </BodyContent>
-
-    <FooterContent />
-</CustomDialog>*@
-
 
 @code {
     private List<User> users = new();
@@ -137,15 +127,6 @@ else
 
     private User curUser;
     private EditContext editContext;
-
-    //private string DialogTitle { get; set; }
-    //private string DialogMessage { get; set; }
-    //private bool showModal = false;
-
-    //private void DialogChange(User user)
-    //{
-    //    showModal = false;
-    //}
 
     private async Task OnRowClicked(User user)
     {
@@ -166,6 +147,10 @@ else
         await Task.Run(() => { editContext = new EditContext(users); });
     }
 
+    /// <summary>
+    /// Hides MudDrawer and clear current datatable selection.
+    /// </summary>
+    /// <returns></returns>
     private async Task CloseAndClear()
     {
         await Task.Run(() =>
@@ -175,13 +160,16 @@ else
         });
     }
 
+    /// <summary>
+    /// Allows to set a new password for current user.
+    /// </summary>
+    /// <returns></returns>
     private async Task resetPassword()
     {
         var parms = new DialogParameters {
-            ["Icon"] = Icons.Material.Filled.Warning,
-            ["Content"] = $"Do you want to reset password for user {curUser?.UserName}?"
+            ["User"] = curUser
         };
-        var dialog = DialogService.Show<DialogConfirm>("Confirm action", parms);
+        var dialog = DialogService.Show<DialogPasswordReset>("Confirm action", parms);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
@@ -220,11 +208,6 @@ else
             Snackbar.Add($"User {curUser?.UserName} deleted", Severity.Success);
         }
 
-        //bool? result = await DialogService.ShowMessageBox(
-        //"Warning",
-        //$"Do you want to delete user {curUser?.UserName}?",
-        //yesText: "Delete!", cancelText: "Cancel");
-
         //if (result != null)
         //{
         //    users.Remove(curUser);
@@ -247,6 +230,7 @@ else
             curUser = (User) result.Data;
             users.Add(curUser);
             Snackbar.Add($"User {curUser.UserName} created", Severity.Success);
+            await InvokeAsync(StateHasChanged);
         }
     }
 
