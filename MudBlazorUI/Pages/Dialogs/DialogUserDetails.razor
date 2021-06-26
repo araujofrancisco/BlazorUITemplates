@@ -46,7 +46,6 @@
     </DialogActions>
 </MudDialog>
 
-
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
@@ -105,26 +104,16 @@
         MudDialog.Cancel();
     }
 
+    /// <summary>
+    /// Returns result if form is valid.
+    /// </summary>
+    /// <returns></returns>
     private async Task saveChanges()
     {
         form.Validate();
 
         if (form.IsValid)
-            try
-            {
-                // save changes
-                //Snackbar.Add("Changes saved", Severity.Success);
-                Console.WriteLine("Changes saved");
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add("An error ocurred during saving...", Severity.Error);
-                Console.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                MudDialog.Close(DialogResult.Ok(User));
-            }
+            MudDialog.Close(DialogResult.Ok(User));
         else
             Console.WriteLine("Form validation failed");
     }
