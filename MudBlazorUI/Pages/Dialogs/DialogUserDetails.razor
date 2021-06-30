@@ -116,8 +116,9 @@
         form.Validate();
 
         if (form.IsValid)
-            MudDialog.Close(DialogResult.Ok((User, pwField1.Value)));
+            MudDialog.Close(DialogResult.Ok((User, pwField1?.Value)));
         else
             Console.WriteLine("Form validation failed");
+        await Task.CompletedTask;
     }
 }
