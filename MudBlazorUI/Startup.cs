@@ -38,7 +38,7 @@ namespace MudBlazorUI
 #endif
             });
             services.AddSingleton<IDbContextFactory<UserDbContext>, DbContextFactory<UserDbContext>>();
-            services.AddScoped<UserDbContext>(p => p.GetRequiredService<IDbContextFactory<UserDbContext>>().CreateContext(seedSize).Result);
+            services.AddScoped<UserDbContext>(p => p.GetRequiredService<IDbContextFactory<UserDbContext>>().CreateContext(p, seedSize).Result);
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
