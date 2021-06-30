@@ -1,25 +1,10 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
 namespace MudBlazorUI.Data
 {
-    public enum Roles
+    public enum UserAction
     {
-        Admin,
-        PowerUser,
-        Reports,
-        Import
-    }
-
-    public class User
-    {
-        [Key]
-        public string UserName { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string MobileNbr { get; set; }
-        public string Email { get; set; }
-        public bool IsEnabled { get; set; }
-        public IEnumerable<Roles> UserRoles { get; set; }
+        Add = 0,
+        Edit = 1,
+        Delete = 2,
+        List = 3
     }
 }
