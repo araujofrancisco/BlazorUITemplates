@@ -2,7 +2,6 @@
 
 @using System.Text.RegularExpressions
 
-@*@inject UserService UserService*@
 @inject IDataService DataService
 
 @inject IDialogService DialogService
@@ -33,12 +32,6 @@
 }
 else
 {
-    @*<style>
-        .table table-stripped {
-            color: darkred !important;
-        }
-    </style>*@
-
     <EditForm EditContext="editContext">
         <MudPaper Height="100vh" Style="overflow:hidden; position:relative;">
             <MudDrawerContainer Class="mud-height-full" Style="display: grid; overflow: auto;">
@@ -47,8 +40,8 @@ else
                     @if (curUser != null)
                     {
                         <div style="display: flex;justify-content: left; justify-items: left;">
-                            <div class="icon-east zoom-in-hover">
-                                <MudIconButton Icon="@Icons.Material.Filled.East" OnClick="@CloseAndClear" Color="Color.Inherit"/>
+                            <div class="icon-direction zoom-in-hover">
+                                <MudIconButton Icon="@Icons.Material.Filled.West" OnClick="@CloseAndClear" Color="Color.Inherit"/>
                             </div>
                             <MudDrawerHeader Style="display: grid;justify-content: center; justify-items: center;padding-left: 6px;padding-right: 6px;">
                                 <MudText Typo="Typo.h6">@curUser.FirstName @curUser.LastName</MudText>
@@ -140,7 +133,7 @@ else
 @code {
     private List<User> displayedItems { get; set; } = new();
     private List<Role> roles { get; set; } = new();
-    //private List<User> users = new();
+
     private bool open = false;
 
     private string SortColumn { get; set; }
@@ -258,8 +251,11 @@ else
         if (!result.Cancelled)
         {
             //TODO: call user service to save password
-            curUser = (User)result.Data;
-
+            var res = result.Data;
+            curUser = (((User, string))res).Item1;
+            var pwd = (((User, string))res).Item2;
+            //TODO: verify the password is getting set
+            await DataService.SetNewPassword(curUser);
             Snackbar.Add($"Password resetted", Severity.Success);
         }
     }
@@ -309,9 +305,10 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            //TODO: call user service to add new user
-            curUser = (User) result.Data;
-            //users.Add(curUser);
+            var res = result.Data;
+            curUser = (((User, string))res).Item1;
+            var pwd = (((User, string))res).Item2;
+            //TODO: verify that user is saving password
             await DataService.AddUser(curUser);
 
             Snackbar.Add($"User {curUser.UserName} created", Severity.Success);
