@@ -111,6 +111,7 @@ else
                     <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.FirstName" CustomTitle="First name" />
                     <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.LastName" CustomTitle="Last name" />
                     <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => Regex.Replace(e.MobileNbr, pattern, repl)" CustomTitle="Mobile" />
+                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.Email" />
 
                     <FD.Blazor.Components.DataTableColumn TModel="User" CustomTitle="Enabled" TextAlignment="TextAlignment.Center">
                         <HeaderTemplate Context="title">
@@ -121,8 +122,15 @@ else
                         </RowTemplate>
                     </FD.Blazor.Components.DataTableColumn>
 
-                    @*<FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property=@((e) => string.Join("|", e.UserRoles.ToArray())) CustomTitle="Roles" />*@
-                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.Email" />
+                    <FD.Blazor.Components.DataTableColumn TModel="User" CustomTitle="Roles">
+                        <HeaderTemplate Context="title">
+                            @title
+                        </HeaderTemplate>
+                        <RowTemplate Context="item">
+                            @(string.Join(" | ", item?.Roles?.Select(r => r.Name).ToList() ?? new List<string>()))
+                        </RowTemplate>
+                    </FD.Blazor.Components.DataTableColumn>
+
                 </FD.Blazor.Components.DataTable>
 
             </MudDrawerContainer>
@@ -186,7 +194,6 @@ else
             ICollection<Role> _roles = curUser?.Roles ?? new List<Role>();
             _roles.Add(role);
             curUser.Roles = _roles;
-            //curUser.Roles.Add(role);
         }
         else
             curUser.Roles.Remove(role);
