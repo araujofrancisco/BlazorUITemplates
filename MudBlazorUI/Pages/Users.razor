@@ -2,7 +2,8 @@
 
 @using System.Text.RegularExpressions
 
-@inject UserService UserService
+@*@inject UserService UserService*@
+@inject IDataService DataService
 
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
@@ -70,19 +71,31 @@ else
 
                         <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Dark" SliderColor="Color.Tertiary">
                             <MudTabPanel Text="Account">
-                                <MudText>Username and email</MudText>
                                 <p class="pt-1">
+                                    <MudText>@curUser.UserName</MudText>
                                     <MudText>@curUser.Email</MudText>
-                                    <div style="margin-top: 5px;">
+                                    <MudText>@curUser.MobileNbr</MudText>
+                                    <div style="display: grid;margin-top: 5px;">
                                         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="editUser">Manage username and email</MudButton>
                                     </div>
                                 </p>
                             </MudTabPanel>
-                            @* TabPanel could include more options/information *@
-                            @*<MudTabPanel Text="Devices">
-                                <MudText>Content Two</MudText>
+                            <MudTabPanel Text="Roles">
+                                <div style="display: grid;grid-auto-columns: auto;grid-auto-flow: dense;">
+                                    @foreach (var role in roles)
+                                    {                                        
+                                        @*<MudCheckBox @bind-Checked="@(new Action<User>((@curUser) => { curUser.Roles.Add(@role); }))" Label="@role.Name">@role.Name</MudCheckBox>*@
+                                        <MudCheckBox T="bool" 
+                                                     Checked="@((curUser?.UserRoles?.Where(r => r.RoleId == role.Id).Any()) ?? false)" 
+                                                     CheckedChanged="@(e => OnRoleChecked(@role, e))" 
+                                                     Color="Color.Secondary" Label="@role.Name" Style="color: white;" />
+                                        @*<MudCheckBox T="bool" Color="Color.Secondary" Label="@role.Name"></MudCheckBox>*@
+                                        @*<MudText Color="Color.Default">@role.Name</MudText>*@
+                                    }
+                                </div>
                             </MudTabPanel>
-                            <MudTabPanel Text="Licenses and apps">
+                            @* TabPanel could include more options/information *@
+                            @*<MudTabPanel Text="Licenses and apps">
                                 <MudText>Content Three</MudText>
                             </MudTabPanel>
                             <MudTabPanel Text="Mail" Disabled="true">
@@ -115,7 +128,7 @@ else
                         </RowTemplate>
                     </FD.Blazor.Components.DataTableColumn>
 
-                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property=@((e) => string.Join("/", e.UserRoles.ToArray())) CustomTitle="Roles" />
+                    @*<FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property=@((e) => string.Join("|", e.UserRoles.ToArray())) CustomTitle="Roles" />*@
                     <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.Email" />
                 </FD.Blazor.Components.DataTable>
 
@@ -125,16 +138,39 @@ else
 }
 
 @code {
-    private List<User> users = new();
+    private List<User> displayedItems { get; set; } = new();
+    private List<Role> roles { get; set; } = new();
+    //private List<User> users = new();
     private bool open = false;
 
     private string SortColumn { get; set; }
-    private FD.Blazor.Core.SortDirection SortDirection { get; set; }
+    private SortDirection SortDirection { get; set; }
+    private const int _numberOfRecords = 250;
+
+    private bool _Loading { get; set; }
+    private int _Records { get; set; }
+    private int _StartIndex { get; set; }
 
     private DataTable<User> _table;
 
     private User curUser;
     private EditContext editContext;
+
+    /// <summary>
+    /// Loading property allow to control when to show the spinner and disabled some controls to avoid issues during data loading.
+    /// </summary>
+    private bool Loading
+    {
+        get { return _Loading; }
+        set
+        {
+            if (_Loading != value)
+            {
+                _Loading = value;
+                InvokeAsync(StateHasChanged);
+            }
+        }
+    }
 
     private async Task OnRowClicked(User user)
     {
@@ -150,9 +186,49 @@ else
         });
     }
 
+    private async Task OnRoleChecked(Role role, bool Checked)
+    {
+        if (Checked)
+        {
+            ICollection<Role> _roles = curUser?.Roles ?? new List<Role>();
+            _roles.Add(role);
+            curUser.Roles = _roles;
+            //curUser.Roles.Add(role);
+        }
+        else
+            curUser.Roles.Remove(role);
+        await DataService.EditUser(curUser);
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        await Task.Run(() => { editContext = new EditContext(users); });
+        roles = await DataService.GetRolesAsync(null, "Name", SortDirection.Ascending, 0, 10);
+        editContext = new EditContext(displayedItems);
+    }
+
+    ///// <summary>
+    ///// Load items from database and apply filters.
+    ///// </summary>
+    ///// <returns></returns>
+    private async Task LoadData(int? startIndex = 0, int? numberOfRecords = _numberOfRecords)
+    {
+        // updates the _StartIndex, it gets resetted when no parameters are received (like when applying a new filter)
+        _StartIndex = (int)startIndex;
+
+        //await SaveSelection(displayedItems);
+
+        // if this is the first time (not initialized) we set the default sort column and direction
+        if (SortColumn == null)
+        {
+            SortColumn = _table.DefaultSortColumn;
+            SortDirection = _table.DefaultSortDirection;
+        }
+
+        // get filters currently applied in form of a expression and request the records that match the conditions
+        // also pass the sorting column/direction, starting index and numbers of records to request
+        displayedItems = await DataService.GetUsersAsync(null, SortColumn, SortDirection, _StartIndex, (int)numberOfRecords);
+
+        //await RestoreSelection(displayedItems);
     }
 
     /// <summary>
@@ -199,8 +275,9 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            await UserService.ToggleSignIn(curUser);
+            curUser = await DataService.SignIn(curUser, !curUser.IsEnabled);
             Snackbar.Add($"User {curUser?.UserName} {actionStr}ed for sign in", Severity.Success);
+            await _table.Refresh();
         }
     }
 
@@ -214,11 +291,10 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            //TODO: call user service to remove user
-            users.Remove(curUser);
-
+            await DataService.DeleteUser(curUser);
             await CloseAndClear();
             Snackbar.Add($"User {curUser?.UserName} deleted", Severity.Success);
+            await _table.Refresh();
         }
     }
 
@@ -235,10 +311,11 @@ else
         {
             //TODO: call user service to add new user
             curUser = (User) result.Data;
-            users.Add(curUser);
+            //users.Add(curUser);
+            await DataService.AddUser(curUser);
 
             Snackbar.Add($"User {curUser.UserName} created", Severity.Success);
-            await InvokeAsync(StateHasChanged);
+            await _table.Refresh();
         }
     }
 
@@ -254,10 +331,12 @@ else
         if (!result.Cancelled)
         {
             //TODO: call user service to save changes
-            //curUser = (User) result.Data;
+            curUser = (User) result.Data;
+            await DataService.EditUser(curUser);
 
             await CloseAndClear();
             Snackbar.Add($"Changes saved", Severity.Success);
+            await _table.Refresh();
         }
     }
 
@@ -282,8 +361,30 @@ else
     /// <returns></returns>
     protected async ValueTask<ItemsProviderResult<User>> LoadUsers(ItemsProviderRequest request)
     {
-        users = await UserService.GetUserAsync();
-        if (SortColumn != null) users = (SortDirection == FD.Blazor.Core.SortDirection.Ascending) ? users.OrderBy(SortColumn).ToList() : users.OrderByDescending(SortColumn).ToList();
-        return new ItemsProviderResult<User>(users.Skip(request.StartIndex).Take(request.Count), users.Count());
+        Loading = true;
+
+        // request new items from startindex, currently requesting 100 items
+        await LoadData(request.StartIndex);
+
+        // updates the record count with current filters applied
+        if (_Records == 0)
+            await UpdateCounter(await DataService.GetUsersCountAsync(null));
+
+        Loading = false;
+        return new ItemsProviderResult<User>(displayedItems, _Records);
+    }
+
+    /// <summary>
+    /// Updates the record counter if current records retrieved has changed.
+    /// </summary>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    protected async Task UpdateCounter(int count)
+    {
+        if (_Records != count)
+        {
+            _Records = count;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 }
