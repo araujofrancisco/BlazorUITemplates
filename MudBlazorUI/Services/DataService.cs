@@ -14,7 +14,7 @@ namespace MudBlazorUI.Services
         Task AddUser(User user);
         Task EditUser(User user);
         Task DeleteUser(User user);
-        Task SetNewPassword(User user);
+        Task SetNewPassword(User user, string password);
         Task<User> SignIn(User user, bool enabled);
         Task<int> GetUsersCountAsync(Expression<Func<User, bool>>? filters);
         Task<List<User>> GetUsersAsync(Expression<Func<User, bool>>? filters, string sortColumn, SortDirection sortDirection, int startIndex, int numberOfRecords);
@@ -78,9 +78,9 @@ public async Task AddUser(User user)
             await _service.DeleteUser(user);
         }
 
-        public async Task SetNewPassword(User user)
+        public async Task SetNewPassword(User user, string password)
         {
-            await _service.SetNewPassword(user);
+            await _service.SetNewPassword(user, password);
         }
         
         public async Task<User> SignIn(User user, bool enabled)

@@ -264,7 +264,7 @@ else
             //TODO: verify the password is getting set
             try
             {
-                await DataService.SetNewPassword(curUser);
+                await DataService.SetNewPassword(curUser, pwd);
                 Snackbar.Add($"Password resetted", Severity.Success);
             }
             catch (Exception ex)

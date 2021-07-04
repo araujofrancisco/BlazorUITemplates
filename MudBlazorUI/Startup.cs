@@ -9,13 +9,12 @@ using FD.SampleData.Data;
 using FD.SampleData.Contexts;
 using FD.SampleData.Interfaces;
 using MudBlazorUI.Services;
+using System;
 
 namespace MudBlazorUI
 {
     public class Startup
     {
-        private const int seedSize = 1000;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,8 +36,10 @@ namespace MudBlazorUI
                 options.EnableSensitiveDataLogging(true);
 #endif
             });
-            services.AddSingleton<IDbContextFactory<UserDbContext>, DbContextFactory<UserDbContext>>();
-            services.AddScoped<UserDbContext>(p => p.GetRequiredService<IDbContextFactory<UserDbContext>>().CreateContext(p, seedSize).Result);
+            services
+                .AddSingleton<IDbContextFactory<UserDbContext>, DbContextFactory<UserDbContext>>()
+                .AddScoped(p => p.GetRequiredService<IDbContextFactory<UserDbContext>>().CreateContext())
+                .AddScoped<IDataService, DataService>();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
@@ -48,8 +49,6 @@ namespace MudBlazorUI
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
-            
-            services.AddScoped<IDataService, DataService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,6 +75,24 @@ namespace MudBlazorUI
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            // custom seeder
+            SeedDb(app.ApplicationServices);
         }
+
+        // on generated data seed size will indicate how many records we want to create
+        private const int seedSize = 1000;
+
+        /// <summary>
+        /// Executes database seeder just after all application services has started.
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        public void SeedDb(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+            DbInitializer<UserDbContext>.Initialize(context, seedSize);
+        }
+
     }
 }
