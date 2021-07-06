@@ -13,12 +13,10 @@
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonAddAlt1" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="addUser">Add a user</MudButton>
 
     @* These buttons would make sense if we activate multiuser selection to apply actions on users *@
-    @*<MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.Refresh" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="refresh">Refresh</MudButton>
-    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="deleteUser">Delete user</MudButton>
-    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.VpnKey" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="resetPassword">Reset password</MudButton>
-    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="manageRoles">Manage roles</MudButton>
-    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.Download" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="exportUser">Export user</MudButton>
-    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.AlternateEmail" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="editUser">Manage username and email</MudButton>*@
+    @*<MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="deleteUser">Delete user</MudButton>
+        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="manageRoles">Manage roles</MudButton>
+        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.Download" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="exportUser">Export user</MudButton>
+        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.AlternateEmail" Color="Color.Inherit" Style="text-transform:none" Size="Size.Small" OnClick="editUser">Manage username and email</MudButton>*@
 </MudToolBar>
 
 @{
@@ -41,7 +39,7 @@ else
                     {
                         <div style="display: flex;justify-content: left; justify-items: left;">
                             <div class="icon-direction zoom-in-hover">
-                                <MudIconButton Icon="@Icons.Material.Filled.West" OnClick="@CloseAndClear" Color="Color.Inherit"/>
+                                <MudIconButton Icon="@Icons.Material.Filled.East" OnClick="@CloseAndClear" Color="Color.Inherit"/>
                             </div>
                             <MudDrawerHeader Style="display: grid;justify-content: center; justify-items: center;padding-left: 6px;padding-right: 6px;">
                                 <MudText Typo="Typo.h6">@curUser.FirstName @curUser.LastName</MudText>

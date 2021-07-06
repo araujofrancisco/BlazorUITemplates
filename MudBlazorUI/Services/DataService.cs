@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-using FD.SampleData.Models;
 using FD.SampleData.Contexts;
 using FD.SampleData.Services;
 using System;
 using System.Linq.Expressions;
 using SortDirection = FD.Blazor.Core.SortDirection;
+using FD.SampleData.Models.Users;
 
 namespace MudBlazorUI.Services
 {
@@ -63,8 +63,8 @@ namespace MudBlazorUI.Services
         {
             return await _service.GetRolesAsync(filters, sortColumn, sortDirection, startIndex, numberOfRecords);
         }
-public async Task AddUser(User user)
-{
+        public async Task AddUser(User user)
+        {
             await _service.AddUser(user);
         }
 

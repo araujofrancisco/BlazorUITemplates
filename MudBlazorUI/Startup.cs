@@ -46,7 +46,7 @@ namespace MudBlazorUI
 
             services.AddMudServices(config =>
             {
-                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
         }
