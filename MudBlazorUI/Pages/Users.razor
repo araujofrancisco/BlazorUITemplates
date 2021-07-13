@@ -32,7 +32,7 @@ else
 {
     <EditForm EditContext="editContext">
         <MudPaper Height="calc(100vh - 3.5rem - 1.1rem - 3rem - 64px - 8px)" Style="overflow:hidden; position:relative;">
-            <div id="scrollable_section" style="height: -webkit-fill-available; display: grid; overflow: auto;">
+            <div id="scrollable_section" style="height: inherit; display: grid; overflow: auto;">
                 <MudDrawerContainer Class="mud-height-full">
 
                     <MudDrawer @bind-Open="@open" Fixed="false" Width="500px" MiniWidth="300px" Anchor="Anchor.End" Elevation="2" Variant="@DrawerVariant.Persistent"
