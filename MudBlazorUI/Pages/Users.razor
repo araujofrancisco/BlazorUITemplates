@@ -31,120 +31,130 @@
 else
 {
     <EditForm EditContext="editContext">
-        <MudPaper Height="100vh" Style="overflow:hidden; position:relative;">
-            <MudDrawerContainer Class="mud-height-full" Style="display: grid; overflow: auto;">
+        <MudPaper Height="calc(100vh - 3.5rem - 1.1rem - 3rem - 64px - 8px)" Style="overflow:hidden; position:relative;">
+            <div id="scrollable_section" style="height: -webkit-fill-available; display: grid; overflow: auto;">
+                <MudDrawerContainer Class="mud-height-full">
 
-                <MudDrawer @bind-Open="@open" Fixed="false" Width="450px" MiniWidth="300px" Anchor="Anchor.End" Elevation="2" Variant="@DrawerVariant.Persistent" Color="Color.Primary">
-                    @if (curUser != null)
-                    {
-                        <div style="display: flex;justify-content: left; justify-items: left;">
-                            <div class="icon-direction zoom-in-hover">
-                                <MudIconButton Icon="@Icons.Material.Filled.East" OnClick="@CloseAndClear" Color="Color.Inherit"/>
-                            </div>
-                            <MudDrawerHeader Style="display: grid;justify-content: center; justify-items: center;padding-left: 6px;padding-right: 6px;">
-                                <MudText Typo="Typo.h6">@curUser.FirstName @curUser.LastName</MudText>
-                                <MudContainer Style="display: flex;column-gap: 12px;">
-                                    <div class="zoom-in-hover">
-                                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.VpnKey" OnClick="resetPassword" Color="Color.Inherit"
-                                                   Style="text-transform: none; font-size: x-small;" Size="Size.Small">Reset password</MudButton>
-                                    </div>
-                                    <div class="zoom-in-hover">
-                                        <MudButton Variant="Variant.Text" StartIcon=@(curUser.IsEnabled ? Icons.Material.Outlined.Block : Icons.Material.Outlined.Check) OnClick="blockSignIn" Color="Color.Inherit"
-                                                   Style="text-transform: none; font-size: x-small;" Size="Size.Small">@(curUser.IsEnabled ? "Block sign-in" : "Allow sign-in")</MudButton>
-                                    </div>
-                                    <div class="zoom-in-hover">
-                                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" OnClick="deleteUser" Color="Color.Inherit"
-                                                   Style="text-transform: none; font-size: x-small;" Size="Size.Small">Delete user</MudButton>
-                                    </div>
-                                </MudContainer>
-                            </MudDrawerHeader>
-                        </div>
-
-                        <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Dark" SliderColor="Color.Tertiary">
-                            <MudTabPanel Text="Account">
-                                <p class="pt-1">
-                                    <MudText>@curUser.UserName</MudText>
-                                    <MudText>@curUser.Email</MudText>
-                                    <MudText>@curUser.MobileNbr</MudText>
-                                    <div style="display: grid;margin-top: 5px;">
-                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="editUser">Manage username and email</MudButton>
-                                    </div>
-                                </p>
-                            </MudTabPanel>
-                            <MudTabPanel Text="Roles">
-                                <div style="display: grid;grid-auto-columns: auto;grid-auto-flow: dense;">
-                                    @foreach (var role in roles)
-                                    {                                        
-                                        @*<MudCheckBox @bind-Checked="@(new Action<User>((@curUser) => { curUser.Roles.Add(@role); }))" Label="@role.Name">@role.Name</MudCheckBox>*@
-                                        <MudCheckBox T="bool" 
-                                                     Checked="@((curUser?.UserRoles?.Where(r => r.RoleId == role.Id).Any()) ?? false)" 
-                                                     CheckedChanged="@(e => OnRoleChecked(@role, e))" 
-                                                     Color="Color.Secondary" Label="@role.Name" Style="color: white;" />
-                                        @*<MudCheckBox T="bool" Color="Color.Secondary" Label="@role.Name"></MudCheckBox>*@
-                                        @*<MudText Color="Color.Default">@role.Name</MudText>*@
-                                    }
+                    <MudDrawer @bind-Open="@open" Fixed="false" Width="500px" MiniWidth="300px" Anchor="Anchor.End" Elevation="2" Variant="@DrawerVariant.Persistent"
+                               Color="Color.Primary" Style="position: fixed;top: 0;">
+                        @if (curUser != null)
+                        {
+                            <div style="display: flex;justify-content: left; justify-items: left;">
+                                <div class="icon-direction zoom-in-hover">
+                                    <MudIconButton Icon="@Icons.Material.Filled.East" OnClick="@CloseAndClear" Color="Color.Inherit" />
                                 </div>
-                            </MudTabPanel>
-                            @* TabPanel could include more options/information *@
-                            @*<MudTabPanel Text="Licenses and apps">
-                                <MudText>Content Three</MudText>
-                            </MudTabPanel>
-                            <MudTabPanel Text="Mail" Disabled="true">
-                                <MudText>Content Disabled</MudText>
-                            </MudTabPanel>*@
-                        </MudTabs>
-                    }
-                </MudDrawer>
+                                <MudDrawerHeader Style="display: grid;justify-content: center; justify-items: center;padding-left: 6px;padding-right: 6px;">
+                                    <MudText Typo="Typo.h6">@curUser.FirstName @curUser.LastName</MudText>
+                                    <MudContainer Style="display: flex;column-gap: 12px;">
+                                        <div class="zoom-in-hover">
+                                            <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.VpnKey" OnClick="resetPassword" Color="Color.Inherit"
+                                                       Style="text-transform: none; font-size: x-small;" Size="Size.Small">Reset password</MudButton>
+                                        </div>
+                                        <div class="zoom-in-hover">
+                                            <MudButton Variant="Variant.Text" StartIcon=@(curUser.IsEnabled ? Icons.Material.Outlined.Block : Icons.Material.Outlined.Check) OnClick="blockSignIn" Color="Color.Inherit"
+                                                       Style="text-transform: none; font-size: x-small;" Size="Size.Small">@(curUser.IsEnabled ? "Block sign-in" : "Allow sign-in")</MudButton>
+                                        </div>
+                                        <div class="zoom-in-hover">
+                                            <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.PersonRemove" OnClick="deleteUser" Color="Color.Inherit"
+                                                       Style="text-transform: none; font-size: x-small;" Size="Size.Small">Delete user</MudButton>
+                                        </div>
+                                    </MudContainer>
+                                </MudDrawerHeader>
+                            </div>
 
-                <FD.Blazor.Components.DataTable @ref="_table" TModel="User" Items="LoadUsers" RowClickedEvent="OnRowClicked"
-                                                SortChanged="(c, d) => { this.SortColumn = c; this.SortDirection = d; }"
-                                                ContainerCssClass="d-flex justify-center align-center mud-height-full"
-                                                ContainerAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
-                                                Styles=@(FD.Blazor.Core.TableStyle.Striped | FD.Blazor.Core.TableStyle.Hover)
-                                                TableAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
-                                                AllowRowSelection="true"
-                                                HideVirtualizePlaceholder="true" VirtualizePlaceholder=@((e) => e.AddMarkupContent(1,"<p><em>Loading...</em></p>"))>
-                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.UserName"
-                                                          IsDefaultSortColumn="true" DefaultSortDirection="FD.Blazor.Core.SortDirection.Ascending" />
-                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.FirstName" CustomTitle="First name" />
-                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.LastName" CustomTitle="Last name" />
-                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => Regex.Replace(e.MobileNbr, pattern, repl)" CustomTitle="Mobile" />
-                    <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.Email" />
+                            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Dark" SliderColor="Color.Tertiary">
+                                <MudTabPanel Text="Account">
+                                    <p class="pt-1">
+                                        <MudText>@curUser.UserName</MudText>
+                                        <MudText>@curUser.Email</MudText>
+                                        <MudText>@curUser.MobileNbr</MudText>
+                                        <div style="display: grid;margin-top: 5px;">
+                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="editUser">Manage username and email</MudButton>
+                                        </div>
+                                    </p>
+                                </MudTabPanel>
+                                <MudTabPanel Text="Roles">
+                                    <div style="display: grid;grid-auto-columns: auto;grid-auto-flow: dense;">
+                                        @foreach (var role in roles)
+                                        {
+                                            @*<MudCheckBox @bind-Checked="@(new Action<User>((@curUser) => { curUser.Roles.Add(@role); }))" Label="@role.Name">@role.Name</MudCheckBox>*@
+                                            <MudCheckBox T="bool"
+                                                         Checked="@((curUser?.UserRoles?.Where(r => r.RoleId == role.Key).Any()) ?? false)"
+                                                         CheckedChanged="@(e => OnRoleChecked(@role.Value, e))"
+                                                         Color="Color.Secondary" Label="@role.Value.Name" Style="color: white;" />
+                                            @*<MudCheckBox T="bool" Color="Color.Secondary" Label="@role.Name"></MudCheckBox>*@
+                                            @*<MudText Color="Color.Default">@role.Name</MudText>*@
+                                        }
+                                    </div>
+                                </MudTabPanel>
+                                @* TabPanel could include more options/information *@
+                                @*<MudTabPanel Text="Licenses and apps">
+                            <MudText>Content Three</MudText>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Mail" Disabled="true">
+                            <MudText>Content Disabled</MudText>
+                        </MudTabPanel>*@
+                            </MudTabs>
+                        }
+                    </MudDrawer>
 
-                    <FD.Blazor.Components.DataTableColumn TModel="User" CustomTitle="Enabled" TextAlignment="TextAlignment.Center">
-                        <HeaderTemplate Context="title">
-                            @title
-                        </HeaderTemplate>
-                        <RowTemplate Context="item">
-                            <InputCheckbox class="custom-control-lg" @bind-Value="@item.IsEnabled" disabled="true"></InputCheckbox>
-                        </RowTemplate>
-                    </FD.Blazor.Components.DataTableColumn>
+                    <FD.Blazor.Components.DataTable @ref="_table" TModel="User" Items="LoadUsers" RowClickedEvent="OnRowClicked"
+                                                    SortChanged="(c, d) => { this.SortColumn = c; this.SortDirection = d; }"
+                                                    ContainerCssClass="d-flex justify-center align-center mud-height-full"
+                                                    ContainerAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
+                                                    Styles=@(FD.Blazor.Core.TableStyle.Striped | FD.Blazor.Core.TableStyle.Hover)
+                                                    TableAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
+                                                    AllowRowSelection="true"
+                                                    HideVirtualizePlaceholder="true" VirtualizePlaceholder=@((e) => e.AddMarkupContent(1,"<p><em>Loading...</em></p>"))>
+                        <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.UserName"
+                                                              IsDefaultSortColumn="true" DefaultSortDirection="FD.Blazor.Core.SortDirection.Ascending" />
+                        <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.FirstName" CustomTitle="First name" />
+                        <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.LastName" CustomTitle="Last name" />
+                        <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => Regex.Replace(e.MobileNbr, pattern, repl)" CustomTitle="Mobile" />
+                        <FD.Blazor.Components.DataTableColumn TModel="User" IsSortable="true" Property="(e) => e.Email" />
 
-                    <FD.Blazor.Components.DataTableColumn TModel="User" CustomTitle="Roles">
-                        <HeaderTemplate Context="title">
-                            @title
-                        </HeaderTemplate>
-                        <RowTemplate Context="item">
-                            @(string.Join(" | ", item?.Roles?.Select(r => r.Name).ToList() ?? new List<string>()))
-                        </RowTemplate>
-                    </FD.Blazor.Components.DataTableColumn>
+                        <FD.Blazor.Components.DataTableColumn TModel="User" CustomTitle="Enabled" TextAlignment="TextAlignment.Center">
+                            <HeaderTemplate Context="title">
+                                @title
+                            </HeaderTemplate>
+                            <RowTemplate Context="item">
+                                <InputCheckbox class="custom-control-lg" @bind-Value="@item.IsEnabled" @onclick:preventDefault="true"></InputCheckbox>
+                            </RowTemplate>
+                        </FD.Blazor.Components.DataTableColumn>
 
-                </FD.Blazor.Components.DataTable>
+                        <FD.Blazor.Components.DataTableColumn TModel="User" CustomTitle="Roles">
+                            <HeaderTemplate Context="title">
+                                @title
+                            </HeaderTemplate>
+                            <RowTemplate Context="item">
+                                @(string.Join(" | ", item?.Roles?.Select(r => r.Name).ToList() ?? new List<string>()))
+                            </RowTemplate>
+                        </FD.Blazor.Components.DataTableColumn>
 
-            </MudDrawerContainer>
+                    </FD.Blazor.Components.DataTable>
+
+                </MudDrawerContainer>
+                <MudScrollToTop TopOffset="100"
+                                Selector="#scrollable_section"
+                                VisibleCssClass="visible absolute"
+                                HiddenCssClass="invisible">
+                    <MudFab Color="Color.Secondary" Icon="@Icons.Filled.KeyboardArrowUp" />
+                </MudScrollToTop>
+            </div>
         </MudPaper>
     </EditForm>
 }
 
 @code {
     private List<User> displayedItems { get; set; } = new();
-    private List<Role> roles { get; set; } = new();
+    //private List<Role> roles { get; set; } = new();
+    private Dictionary<int, Role> roles = new();
 
     private bool open = false;
 
     private string SortColumn { get; set; }
     private SortDirection SortDirection { get; set; }
-    private const int _numberOfRecords = 250;
+    private const int _numberOfRecords = 50;
 
     private bool _Loading { get; set; }
     private int _Records { get; set; }
@@ -187,6 +197,7 @@ else
 
     private async Task OnRoleChecked(Role role, bool Checked)
     {
+        //TODO: fix role assignment
         if (Checked)
         {
             ICollection<Role> _roles = curUser?.Roles ?? new List<Role>();
@@ -200,7 +211,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        roles = await DataService.GetRolesAsync(null, "Name", SortDirection.Ascending, 0, 10);
+        roles = (await DataService.GetRolesAsync(null, "Name", SortDirection.Ascending, 0, 10)).ToDictionary(r => r.Id);
         editContext = new EditContext(displayedItems);
     }
 
