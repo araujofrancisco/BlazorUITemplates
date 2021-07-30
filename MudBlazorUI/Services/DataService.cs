@@ -17,8 +17,10 @@ namespace MudBlazorUI.Services
         Task SetNewPassword(User user, string password);
         Task<User> SignIn(User user, bool enabled);
         Task<int> GetUsersCountAsync(Expression<Func<User, bool>>? filters);
-        Task<List<User>> GetUsersAsync(Expression<Func<User, bool>>? filters, string sortColumn, SortDirection sortDirection, int startIndex, int numberOfRecords);
-        Task<List<Role>> GetRolesAsync(Expression<Func<Role, bool>>? filters, string sortColumn, SortDirection sortDirection, int startIndex, int numberOfRecords);
+        Task<List<User>> GetUsersAsync(Expression<Func<User, bool>>? filters, string sortColumn, SortDirection sortDirection, Expression<Func<User, object>> sortColumnExpr, 
+            int startIndex, int numberOfRecords);
+        Task<List<Role>> GetRolesAsync(Expression<Func<Role, bool>>? filters, string sortColumn, SortDirection sortDirection, Expression<Func<Role, object>> sortColumnExpr,
+            int startIndex, int numberOfRecords);
     }
 
     public class DataService : IDataService
@@ -52,13 +54,13 @@ namespace MudBlazorUI.Services
             return await _service.GetUsersCountAsync(filters);
         }
 
-        public async Task<List<User>> GetUsersAsync(Expression<Func<User, bool>>? filters, string sortColumn, SortDirection sortDirection, 
+        public async Task<List<User>> GetUsersAsync(Expression<Func<User, bool>>? filters, string sortColumn, SortDirection sortDirection, Expression<Func<User, object>> sortColumnExpr,
             int startIndex, int numberOfRecords)
         {
             return await _service.GetUsersAsync(filters, sortColumn, sortDirection, startIndex, numberOfRecords);
         }
 
-        public async Task<List<Role>> GetRolesAsync(Expression<Func<Role, bool>>? filters, string sortColumn, SortDirection sortDirection,
+        public async Task<List<Role>> GetRolesAsync(Expression<Func<Role, bool>>? filters, string sortColumn, SortDirection sortDirection, Expression<Func<Role, object>> sortColumnExpr,
             int startIndex, int numberOfRecords)
         {
             return await _service.GetRolesAsync(filters, sortColumn, sortDirection, startIndex, numberOfRecords);

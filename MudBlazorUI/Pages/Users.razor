@@ -99,7 +99,7 @@ else
                     </MudDrawer>
 
                     <FD.Blazor.Components.DataTable @ref="_table" TModel="User" Items="LoadUsers" RowClickedEvent="OnRowClicked"
-                                                    SortChanged="(c, d) => { this.SortColumn = c; this.SortDirection = d; }"
+                                                    SortChanged="(c, d, e) => { this.SortColumn = c; this.SortDirection = d; this.SortColumnExpr = e; }"
                                                     ContainerCssClass="d-flex justify-center align-center mud-height-full"
                                                     ContainerAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
                                                     Styles=@(FD.Blazor.Core.TableStyle.Striped | FD.Blazor.Core.TableStyle.Hover)
@@ -154,6 +154,7 @@ else
 
     private string SortColumn { get; set; }
     private SortDirection SortDirection { get; set; }
+    private Expression<Func<User, object>> SortColumnExpr { get; set; }
     private const int _numberOfRecords = 50;
 
     private bool _Loading { get; set; }
@@ -211,7 +212,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        roles = (await DataService.GetRolesAsync(null, "Name", SortDirection.Ascending, 0, 10)).ToDictionary(r => r.Id);
+        roles = (await DataService.GetRolesAsync(null, "Name", SortDirection.Ascending, null, 0, 10)).ToDictionary(r => r.Id);
         editContext = new EditContext(displayedItems);
     }
 
@@ -235,7 +236,8 @@ else
 
         // get filters currently applied in form of a expression and request the records that match the conditions
         // also pass the sorting column/direction, starting index and numbers of records to request
-        displayedItems = await DataService.GetUsersAsync(null, SortColumn, SortDirection, _StartIndex, (int)numberOfRecords);
+        displayedItems = await DataService.GetUsersAsync(null, SortColumn, SortDirection, SortColumnExpr, 
+            _StartIndex, (int)numberOfRecords);
 
         //await RestoreSelection(displayedItems);
     }
